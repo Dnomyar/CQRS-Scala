@@ -4,9 +4,12 @@ version := "1.0"
 
 scalaVersion := "2.11.7"
 
-// Change this to another test framework if you prefer
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.4" % "test"
+resolvers += Resolver.sonatypeRepo("snapshots")
 
 // Uncomment to use Akka
-//libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.11"
-
+libraryDependencies ++= Seq(
+  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
+  "org.http4s" %% "http4s-dsl" % "0.18.1",
+  "com.google.inject" % "guice" % "4.0",
+  "net.codingwell" %% "scala-guice" % "4.1.1"
+)
