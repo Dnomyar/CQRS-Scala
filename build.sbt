@@ -11,5 +11,6 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "2.2.4" % "test",
   "org.http4s" %% "http4s-dsl" % "0.18.1",
   "com.google.inject" % "guice" % "4.0",
-  "net.codingwell" %% "scala-guice" % "4.1.1"
+  "net.codingwell" %% "scala-guice" % "4.1.1",
+  "io.github.lukehutch" % "fast-classpath-scanner" % "2.18.1"
 )

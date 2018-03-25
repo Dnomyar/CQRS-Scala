@@ -18,7 +18,7 @@ trait MessageBus {
 
   protected val classHandlerMap: Map[Type, Handler[Message[_], _]]
 
-  private val middlewareChain: Chain =
+  private lazy val middlewareChain: Chain =
     middlewares.foldRight[Chain](HandlerInvocation(classHandlerMap))(MiddlewareChainLink)
 
 
@@ -60,22 +60,16 @@ trait MessageBus {
 
 
 
-class CommandBusFactory @Inject()(handlers: List[Handler[Message[_],_]]) {
+class CommandBusFactory @Inject()(handlers: Set[Handler[Message[Any],Any]]) {
 
   def create(middlewares: List[CommandMiddleware]): CommandBus = new CommandBus(handlers)(middlewares)
 
 }
 
-class CommandBus private[bus] (handlers: List[Handler[Message[_],_]])(override val middlewares: List[CommandMiddleware] = List.empty) extends MessageBus {
+class CommandBus private[bus] (handlers: Set[Handler[Message[Any],Any]])(override val middlewares: List[CommandMiddleware] = List.empty) extends MessageBus {
 
   override protected val classHandlerMap: Map[Type, Handler[Message[_], _]] =
-    handlers.map{handler =>
-      val messageType: Type = handler.messageType
-      val h: Handler[Message[Any],Any] = handler.asInstanceOf[Handler[Message[Any],Any]]
-
-      val res: (Type, Handler[Message[_],_]) = messageType -> h
-      res
-    }.toMap
+    handlers.map(handler => handler.messageType -> handler).toMap
 
 }
 

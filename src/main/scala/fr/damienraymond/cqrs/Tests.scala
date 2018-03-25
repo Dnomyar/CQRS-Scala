@@ -5,7 +5,7 @@ import java.util.UUID
 import com.google.inject.Inject
 import fr.damienraymond.cqrs.core.infrastructure.bus.{CommandBus, CommandBusFactory}
 import fr.damienraymond.cqrs.core.infrastructure.event.EventBusMiddleware
-import fr.damienraymond.cqrs.example.commands.{BuyProducts, BuyProductsHandler, PutArticleOnSale}
+import fr.damienraymond.cqrs.example.commands.{BuyProducts, BuyProductsHandler}
 
 class Tests @Inject()(buyProductsHandler: BuyProductsHandler,
                       eventBusMiddleware: EventBusMiddleware,
