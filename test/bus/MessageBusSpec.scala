@@ -1,7 +1,7 @@
-//package fr.damienraymond.cqrs.core.infrastructure.bus
+//package fr.damienraymond.fr.damienraymond.cqrs.core.infrastructure.bus
 //
-//import fr.damienraymond.cqrs.core.middleware.Middleware
-//import fr.damienraymond.cqrs.core.{Command, Handler, Message}
+//import fr.damienraymond.fr.damienraymond.cqrs.core.middleware.Middleware
+//import fr.damienraymond.fr.damienraymond.cqrs.core.{Command, Handler, Message}
 //import org.scalatest._
 //
 //class CommandBusSpec extends FlatSpec with Matchers {
