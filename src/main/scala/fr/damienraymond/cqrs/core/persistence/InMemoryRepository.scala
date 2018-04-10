@@ -2,6 +2,7 @@ package fr.damienraymond.cqrs.core.persistence
 
 import fr.damienraymond.cqrs.core.entity.AggregateRoot
 
+// TODO to actor
 trait InMemoryRepository[T_ID, T_ROOT <: AggregateRoot[T_ID]] extends Repository[T_ID, T_ROOT] {
 
   private var elements = Map.empty[T_ID, T_ROOT]
