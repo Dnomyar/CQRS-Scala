@@ -18,6 +18,14 @@ trait Handler[MESSAGE <: Message[TARGET_TYPE], TARGET_TYPE] {
 
 trait CommandHandler[COMMAND <: Command[TARGET_TYPE], TARGET_TYPE] {
 
+  def handle(message: COMMAND): (TARGET_TYPE, List[Event[_]])
+
+  def messageType[T <: Message[TARGET_TYPE] : TypeTag]: Type = typeOf[T]
+
+}
+
+trait UnitOfWorkCommandHandler[COMMAND <: Command[TARGET_TYPE], TARGET_TYPE] {
+
   def handle(message: COMMAND)(implicit uow: UnitOfWork): (TARGET_TYPE, List[Event[_]])
 
   def messageType[T <: Message[TARGET_TYPE] : TypeTag]: Type = typeOf[T]
