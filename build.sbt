@@ -1,16 +1,17 @@
 name := """cqrs-scala"""
+organization := "fr.damienraymond.cqrs"
 
-version := "1.0"
+version := "1.0-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-resolvers += Resolver.sonatypeRepo("snapshots")
+scalaVersion := "2.12.4"
 
-// Uncomment to use Akka
-libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test",
-  "org.http4s" %% "http4s-dsl" % "0.18.1",
-  "com.google.inject" % "guice" % "4.0",
-  "net.codingwell" %% "scala-guice" % "4.1.1",
-  "io.github.lukehutch" % "fast-classpath-scanner" % "2.18.1"
-)
+libraryDependencies += guice
+libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "3.1.2" % Test
+
+// Adds additional packages into Twirl
+//TwirlKeys.templateImports += "fr.damienraymond.cqrs.controllers._"
+
+// Adds additional packages into conf/routes
+// play.sbt.routes.RoutesKeys.routesImport += "fr.damienraymond.cqrs.binders._"
