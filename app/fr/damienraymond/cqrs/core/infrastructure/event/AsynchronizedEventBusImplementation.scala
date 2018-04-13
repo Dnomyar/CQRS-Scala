@@ -1,11 +1,11 @@
 package fr.damienraymond.cqrs.core.infrastructure.event
 
 import com.google.inject.Inject
-import fr.damienraymond.cqrs.core.event.{Event, EventBus, EventCaptor}
+import fr.damienraymond.cqrs.core.event.{AsynchronizedEventBus, Event, EventCaptor, SynchronizedEventBus}
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
-class EventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(implicit ec: ExecutionContext) extends EventBus {
+class AsynchronizedEventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(implicit ec: ExecutionContext) extends AsynchronizedEventBus {
 
 
   override def publish(events: List[Event[_]]): Unit =
@@ -13,7 +13,7 @@ class EventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(im
 
   private def publishOne(event: Event[_]): Unit = {
     captors
-      .filter(_.eventType == event.messageType)
+      .filter(_.eventType == event.thisType)
       .foreach { captor =>
         println(s"Applying captor : $captor")
         captor.asInstanceOf[EventCaptor[Event[_]]]
@@ -27,7 +27,6 @@ class EventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(im
     case e: Exception =>
       println(s"ERROR: got error on captor ${captor.getClass} with event $event. Error : $e")
   }
-
 
 
 }

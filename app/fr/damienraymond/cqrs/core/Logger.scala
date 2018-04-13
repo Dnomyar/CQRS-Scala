@@ -1,7 +1,7 @@
 package fr.damienraymond.cqrs.core
 
+import play.api
+
 trait Logger {
-  lazy val logger = new {
-    def info(message: => String): Unit = println(s"[INFO] $message")
-  }
+  lazy val logger = api.Logger(this.getClass)
 }

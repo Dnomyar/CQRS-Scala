@@ -17,8 +17,7 @@ trait InMemoryRepository[T_ID, T_ROOT <: AggregateRoot[T_ID]] extends Repository
     elements = elements.filterNot(_._1 == root.id)
   }
 
-  override def
-  getAll: List[T_ROOT] = elements.values.toList
+  override def getAll: List[T_ROOT] = elements.values.toList
 
   override def save(root: T_ROOT): Unit = {
     elements = elements.updated(root.id, root)

@@ -2,12 +2,16 @@ package fr.damienraymond.cqrs.core
 
 import scala.reflect.runtime.universe._
 
-trait Message[+RETURN_TYPE] {
+abstract class Message[+RETURN_TYPE : TypeTag] {
 
-  def messageType[T <: Message[_] : TypeTag]: Type = typeOf[T]
+  lazy val thisType: Type = {
+    val cls = this.getClass
+    runtimeMirror(cls.getClassLoader).classSymbol(cls).toType
+  }
 
 }
 
-trait Command[+RETURN_TYPE] extends Message[RETURN_TYPE]
 
-trait Query[+RETURN_TYPE] extends Message[RETURN_TYPE]
+abstract class Command[+RETURN_TYPE : TypeTag] extends Message[RETURN_TYPE]
+
+abstract class Query[+RETURN_TYPE : TypeTag] extends Message[RETURN_TYPE]

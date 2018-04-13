@@ -1,7 +1,14 @@
 package fr.damienraymond.cqrs.core.event
 
-import com.sun.corba.se.impl.orbutil.closure.Future
+import scala.concurrent.Future
+import scala.reflect.runtime.universe._
 
-trait EventBus {
+trait SynchronizedEventBus {
+  def publish(events: List[Event[_]]): Future[Unit]
+}
+
+
+
+trait AsynchronizedEventBus {
   def publish(events: List[Event[_]]): Unit
 }

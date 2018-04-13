@@ -2,4 +2,6 @@ package fr.damienraymond.cqrs.core.event
 
 import fr.damienraymond.cqrs.core.Message
 
-trait Event[T] extends Message[T]
+import scala.reflect.runtime.universe._
+
+abstract class Event[T: TypeTag] extends Message[T]

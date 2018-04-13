@@ -21,26 +21,26 @@ class UnitOfWorkCommandBusImplementation private[bus](handlers: Set[CommandHandl
     handlers.map(handler => handler.messageType -> handler).toMap
 
 
-  override def dispatch[MESSAGE <: Command[RETURN_TYPE], RETURN_TYPE](message: MESSAGE)(implicit messageClass: Manifest[MESSAGE]): Future[(RETURN_TYPE, List[Event[_]])] =
-    middlewareChain.handleMiddlewareAndCallNext(message)
+  override def dispatch[RETURN_TYPE, COMMAND <: Command[RETURN_TYPE] : TypeTag](message: COMMAND): Future[(RETURN_TYPE, List[Event[_]])] =
+    middlewareChain.handleMiddlewareAndCallNext[RETURN_TYPE, COMMAND](message)
 
 
   trait UnitOfWorkChain {
-    def handleMiddlewareAndCallNext[RETURN_T](message: Command[RETURN_T]): Future[(RETURN_T, List[Event[_]])]
+    def handleMiddlewareAndCallNext[RETURN_T, COMMAND <: Command[RETURN_T] : TypeTag](message: COMMAND): Future[(RETURN_T, List[Event[_]])]
   }
 
   case class UnitOfWorkMiddlewareChainLink(current: CommandMiddleware, next: UnitOfWorkChain) extends UnitOfWorkChain {
-    override def handleMiddlewareAndCallNext[RETURN_T](message: Command[RETURN_T]): Future[(RETURN_T, List[Event[_]])] = {
+    override def handleMiddlewareAndCallNext[RETURN_T, COMMAND <: Command[RETURN_T] : TypeTag](message: COMMAND): Future[(RETURN_T, List[Event[_]])] = {
       println(s"Applying middleware : $current")
-      current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext(message))
+      current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext[RETURN_T, COMMAND](message))
     }
   }
 
 
   case class UnitOfWorkHandlerInvocation(handlers: Map[Type, CommandHandler[Command[_], _]]) extends UnitOfWorkChain {
-    override def handleMiddlewareAndCallNext[RETURN_T](message: Command[RETURN_T]): Future[(RETURN_T, List[Event[_]])] = {
+    override def handleMiddlewareAndCallNext[RETURN_T, COMMAND <: Command[RETURN_T] : TypeTag](message: COMMAND): Future[(RETURN_T, List[Event[_]])] = {
       handlers
-        .get(message.messageType) match {
+        .get(typeOf[COMMAND]) match {
         case Some(handler) =>
           val uow = uowFactory.create
           val res = handler
@@ -48,7 +48,7 @@ class UnitOfWorkCommandBusImplementation private[bus](handlers: Set[CommandHandl
             .handle(message)(uow)
           uow.commit.map(_ => res)
         case None =>
-          Future.failed(new NoHandlerFoundException(message.messageType.toString)) // TODO <-
+          Future.failed(new NoHandlerFoundException(typeOf[COMMAND].toString)) // TODO <-
       }
     }
   }

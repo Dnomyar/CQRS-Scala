@@ -4,9 +4,11 @@ import fr.damienraymond.cqrs.core.Command
 import fr.damienraymond.cqrs.core.event.Event
 
 import scala.concurrent.Future
+import scala.reflect.runtime.universe._
+
 
 trait UnitOfWorkCommandBus {
 
-  def dispatch[MESSAGE <: Command[RETURN_TYPE], RETURN_TYPE](message: MESSAGE)(implicit messageClass: Manifest[MESSAGE]): Future[(RETURN_TYPE, List[Event[_]])]
+  def dispatch[RETURN_TYPE, MESSAGE <: Command[RETURN_TYPE] : TypeTag](message: MESSAGE): Future[(RETURN_TYPE, List[Event[_]])]
 
 }
