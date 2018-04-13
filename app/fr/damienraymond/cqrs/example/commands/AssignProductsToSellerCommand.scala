@@ -10,8 +10,7 @@ import fr.damienraymond.cqrs.example.model.seller.Seller
 import fr.damienraymond.cqrs.example.model.seller.events.ProductsAssignedToSeller
 import fr.damienraymond.cqrs.example.model.seller.events.errors.SomeProductsWerentFound
 
-case class
-AssignProductsToSellerCommand(sellerName: String, products: Set[UUID]) extends Command[Option[UUID]]
+case class AssignProductsToSellerCommand(sellerName: String, products: Set[UUID]) extends Command[Option[UUID]]
 
 
 
@@ -34,6 +33,8 @@ class AssignProductsToSellerCommandHandler @Inject()(productRepository: ProductR
           cmd.sellerName,
           cmd.products
         )
+
+        sellerRepository.save(seller)
 
         (Some(sellerId), List(ProductsAssignedToSeller(seller)))
 
