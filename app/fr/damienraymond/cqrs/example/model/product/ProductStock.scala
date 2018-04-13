@@ -13,4 +13,7 @@ case class ProductStock(product: UUID, numberOfAvailableProducts: Long) extends 
   def buy(numberOfItems: Long): ProductStock =
     copy(numberOfAvailableProducts = numberOfAvailableProducts - numberOfItems)
 
+  def addNewProducts(numberOfProductsToAdd: Long): ProductStock =
+    copy(numberOfAvailableProducts = numberOfAvailableProducts + numberOfProductsToAdd)
+
 }

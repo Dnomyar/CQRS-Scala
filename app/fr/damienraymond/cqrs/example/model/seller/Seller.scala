@@ -5,6 +5,7 @@ import java.util.UUID
 import fr.damienraymond.cqrs.core.entity.UUIDAggregateRoot
 
 
-case class Seller(id: UUID,
+case class
+Seller(id: UUID,
                   name: String,
                   products: Set[UUID]) extends UUIDAggregateRoot
