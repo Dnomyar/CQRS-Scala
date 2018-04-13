@@ -1,0 +1,56 @@
+@()
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Store</title>
+
+
+</head>
+<body>
+
+
+    <div id="products"></div>
+
+
+<script type="text/javascript">
+
+    const pr = document.querySelector("#products");
+
+    fetch(new Request('/products'))
+        .then(resp => resp.json())
+        .then(products => {
+            console.log("products ", products);
+
+            pr.innerHTML = products.map(product =>
+                `<ul>
+                    <li>Name : ${product.name}</li>
+                    <li>Il reste ${product.numberOfProductAvailable} produit(s).</li>
+                    <li>Prix TTC : ${product.vatPrice}€</li>
+                    <li>Vendeur : ${product.seller.name}</li>
+                    <li><a href="#" onclick="buyProduct('${product.id}')">Acheter le produit</a></li>
+                </ul>`
+            ).concat()
+        })
+
+    const buyProduct = (productId) => {
+        console.log(`Buying product ${productId}`)
+        fetch(new Request(`/products/${productId}/buy`), {
+            headers: {
+                'Content-type': 'application/json'
+            },
+            method: "POST",
+            body: JSON.stringify({
+                "productId": productId,
+                "numberOfProduct": 1
+            })
+        }).then(resp => {
+            alert(`Status : ${resp.statusText}`)
+            return resp.text()
+        }).then(body => console.log("Body", body))
+    }
+
+</script>
+</body>
+</html>
