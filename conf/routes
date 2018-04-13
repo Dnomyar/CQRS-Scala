@@ -6,7 +6,8 @@
 # An example controller showing a sample home page
 GET     /                           fr.damienraymond.cqrs.example.web.App.renderAppPage
 
-GET     /products                   fr.damienraymond.cqrs.example.web.ProductResource.index
+GET     /products                   fr.damienraymond.cqrs.example.web.ProductResource.getAllProducts
+GET     /products/:productId        fr.damienraymond.cqrs.example.web.ProductResource.findProductById(productId: java.util.UUID)
 POST    /products/:productId/buy    fr.damienraymond.cqrs.example.web.ProductResource.buy(productId: java.util.UUID)
 
 # Map static resources from the /public folder to the /assets URL path

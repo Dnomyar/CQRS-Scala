@@ -24,15 +24,19 @@
             console.log("products ", products);
 
             pr.innerHTML = products.map(product =>
-                `<ul>
-                    <li>Name : ${product.name}</li>
-                    <li>Il reste ${product.numberOfProductAvailable} produit(s).</li>
-                    <li>Prix TTC : ${product.vatPrice}€</li>
-                    <li>Vendeur : ${product.seller.name}</li>
-                    <li><a href="#" onclick="buyProduct('${product.id}')">Acheter le produit</a></li>
-                </ul>`
+                `<div id="product-${product.id}">${productToHtml(product)}</div>`
             ).concat()
         })
+
+
+    const productToHtml = (product) =>
+        `<ul>
+            <li>Name : ${product.name}</li>
+            <li>Il reste ${product.numberOfProductAvailable} produit(s).</li>
+            <li>Prix TTC : ${product.vatPrice}€</li>
+            <li>Vendeur : ${product.seller.name}</li>
+            <li><a href="#" onclick="buyProduct('${product.id}')">Acheter le produit</a></li>
+        </ul>`
 
     const buyProduct = (productId) => {
         console.log(`Buying product ${productId}`)
@@ -46,9 +50,22 @@
                 "numberOfProduct": 1
             })
         }).then(resp => {
-            alert(`Status : ${resp.statusText}`)
-            return resp.text()
-        }).then(body => console.log("Body", body))
+            console.log(`Status : ${resp.statusText}`)
+
+            if (resp.ok) {
+                return fetch(new Request(resp.headers.get("Location")))
+            }else {
+                resp.json().then(errors => {
+                    alert(`Error : ${errors}`)
+                    throw new Error(`Error : ${errors}`) })
+                return Promise.reject()
+            }
+
+        }).then(resp => resp.json())
+        .then(body => {
+            console.log("Body", body);
+            document.querySelector(`#product-${productId}`).innerHTML = productToHtml(body)
+        })
     }
 
 </script>

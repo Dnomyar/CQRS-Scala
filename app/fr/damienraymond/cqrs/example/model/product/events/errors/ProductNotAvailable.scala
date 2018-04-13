@@ -5,4 +5,4 @@ import java.util.UUID
 import fr.damienraymond.cqrs.core.event.error.BusinessError
 import fr.damienraymond.cqrs.example.model.product.Product
 
-case class ProductNotAvailable(storeId: UUID, productId: UUID) extends BusinessError[Product]
+case class ProductNotAvailable(product: Product, numberOfProductAvailable: Long, requestedNumberOfProductToBuy: Long) extends BusinessError[Product]
