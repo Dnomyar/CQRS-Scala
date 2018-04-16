@@ -10,46 +10,50 @@ import fr.damienraymond.cqrs.example.model.seller.Seller
 import fr.damienraymond.cqrs.example.model.seller.events.ProductsAssignedToSeller
 import fr.damienraymond.cqrs.example.model.seller.events.errors.SomeProductsWerentFound
 
+import scala.concurrent.{ExecutionContext, Future}
+
 case class AssignProductsToSellerCommand(sellerName: String, products: Set[UUID]) extends Command[Option[UUID]]
 
 
 
 class AssignProductsToSellerCommandHandler @Inject()(productRepository: ProductRepository,
-                                                     sellerRepository: SellerRepository) extends CommandHandler[AssignProductsToSellerCommand, Option[UUID]] {
+                                                     sellerRepository: SellerRepository)(implicit ec: ExecutionContext) extends CommandHandler[AssignProductsToSellerCommand, Option[UUID]] {
 
-  override def handle(cmd: AssignProductsToSellerCommand): (Option[UUID], List[Event[_]]) = {
+  override def handle(cmd: AssignProductsToSellerCommand): Future[(Option[UUID], List[Event[_]])] = {
 
-    val sellerId =
-      sellerRepository.getAll.find(_.name == cmd.sellerName)
+    val findOfCreateSellerId = (sellers: List[Seller]) =>
+      sellers.find(_.name == cmd.sellerName)
         .map(_.id)
         .getOrElse(UUID.randomUUID())
 
 
-    getAllProductsThatNotExist(cmd.products) match {
-      case nonExistingProducts if nonExistingProducts.isEmpty =>
+    sellerRepository.getAll
+      .map(findOfCreateSellerId)
+      .flatMap{ sellerId =>
+        getAllProductsThatNotExist(cmd.products).map {
+          case nonExistingProducts if nonExistingProducts.isEmpty =>
 
-        val seller = Seller(
-          sellerId,
-          cmd.sellerName,
-          cmd.products
-        )
+            val seller = Seller(
+              sellerId,
+              cmd.sellerName,
+              cmd.products
+            )
 
-        sellerRepository.save(seller)
+            sellerRepository.save(seller)
 
-        (Some(sellerId), List(ProductsAssignedToSeller(seller)))
+            (Some(sellerId), List(ProductsAssignedToSeller(seller)))
 
-      case nonExistingProducts =>
-        (None, List(SomeProductsWerentFound(cmd.sellerName, cmd.products, nonExistingProducts)))
-    }
+          case nonExistingProducts =>
+            (None, List(SomeProductsWerentFound(cmd.sellerName, cmd.products, nonExistingProducts)))
+        }
+      }
   }
 
 
-  def getAllProductsThatNotExist(products: Set[UUID]): Set[UUID] = {
-    val productsListOpt = products.map(productRepository.get)
-
-    val productsNotFound = products.diff(productsListOpt.flatMap(_.map(_.id)))
-
-    productsNotFound
+  def getAllProductsThatNotExist(products: Set[UUID]): Future[Set[UUID]] = {
+    Future.sequence(products.map(productRepository.get)).map{ productsListOpt =>
+      products.diff(productsListOpt.flatMap(_.map(_.id)))
+    }
   }
 
 }

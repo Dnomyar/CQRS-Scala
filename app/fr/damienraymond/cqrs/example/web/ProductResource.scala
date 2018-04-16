@@ -3,6 +3,7 @@ package fr.damienraymond.cqrs.example.web
 import java.util.UUID
 
 import com.google.inject.Inject
+import fr.damienraymond.cqrs.core.Logger
 import fr.damienraymond.cqrs.core.event.error.BusinessError
 import fr.damienraymond.cqrs.core.infrastructure.bus.{CommandBus, QueryBus}
 import fr.damienraymond.cqrs.example.commands.BuyProductsCommand
@@ -14,14 +15,17 @@ import scala.concurrent.ExecutionContext
 
 class ProductResource @Inject() (cc: ControllerComponents,
                                  queryBus: QueryBus,
-                                 commandBus: CommandBus)(implicit ec: ExecutionContext) extends AbstractController(cc) {
+                                 commandBus: CommandBus)(implicit ec: ExecutionContext) extends AbstractController(cc) with Logger {
 
 
   def getAllProducts = Action.async {
     queryBus.dispatch(AllProductsQuery())
       .map(ps => Ok(Json.toJson(ps)))
       .recover{
-        case e => InternalServerError(e.toString)
+        case e =>
+          logger.error(e.toString)
+          e.printStackTrace
+          InternalServerError(e.toString)
       }
   }
 
@@ -30,7 +34,10 @@ class ProductResource @Inject() (cc: ControllerComponents,
     queryBus.dispatch(ProductByIdQuery(productId))
       .map(ps => Ok(Json.toJson(ps)))
       .recover{
-        case e => InternalServerError(e.toString)
+        case e =>
+          logger.error(e.toString)
+          e.printStackTrace
+          InternalServerError(e.toString)
       }
   }
 

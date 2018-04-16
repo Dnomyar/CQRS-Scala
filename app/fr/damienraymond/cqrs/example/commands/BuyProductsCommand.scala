@@ -13,33 +13,35 @@ import fr.damienraymond.cqrs.example.model.product.events.errors.ProductNotFound
 import fr.damienraymond.cqrs.example.model.store.{Store, StoreNotFound}
 import play.api.libs.json.Json
 
+import scala.concurrent.{ExecutionContext, Future}
+
 case class BuyProductsCommand(productId: UUID, numberOfProduct: Long = 1) extends Command[Unit]
 
 
 object BuyProductsCommand { implicit val format = Json.format[BuyProductsCommand] }
 
 
-class BuyProductsCommandHandler @Inject()(productRepository: ProductRepository) extends CommandHandler[BuyProductsCommand, Unit] with Logger {
-  override def handle(message: BuyProductsCommand): (Unit, List[Event[_]]) = {
+class BuyProductsCommandHandler @Inject()(productRepository: ProductRepository)(implicit ec: ExecutionContext) extends CommandHandler[BuyProductsCommand, Unit] with Logger {
+  override def handle(cmd: BuyProductsCommand): Future[(Unit, List[Event[_]])] = {
 
     logger.info("Calling BuyProductsHandler")
 
-    product(message) match {
-      case None => (Unit, List(ProductNotFound(message.productId)))
+    product(cmd).map {
+      case None => (Unit, List(ProductNotFound(cmd.productId)))
       case Some(product) =>
 
-        product.buy(message.numberOfProduct) match {
+        product.buy(cmd.numberOfProduct) match {
           case Left(error) => (Unit, List(error))
           case Right(None) => (Unit, List.empty)
           case Right(Some(newProduct)) =>
             productRepository.save(newProduct)
-            (Unit, List(ProductBought(newProduct, message.numberOfProduct)))
+            (Unit, List(ProductBought(newProduct, cmd.numberOfProduct)))
         }
 
 
     }
   }
 
-  def product(command: BuyProductsCommand): Option[Product] = productRepository.get(command.productId)
+  def product(command: BuyProductsCommand): Future[Option[Product]] = productRepository.get(command.productId)
 }
 

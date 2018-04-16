@@ -11,7 +11,7 @@ import scala.reflect.runtime.universe._
 
 abstract class CommandHandler[COMMAND <: Command[TARGET_TYPE] : TypeTag, TARGET_TYPE] {
 
-  def handle(cmd: COMMAND): (TARGET_TYPE, List[Event[_]])
+  def handle(cmd: COMMAND): Future[(TARGET_TYPE, List[Event[_]])]
 
   def messageType: Type = typeOf[COMMAND]
 

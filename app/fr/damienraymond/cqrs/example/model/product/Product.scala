@@ -6,6 +6,7 @@ import fr.damienraymond.cqrs.core.entity.UUIDAggregateRoot
 import fr.damienraymond.cqrs.core.event.Event
 import fr.damienraymond.cqrs.core.event.error.BusinessError
 import fr.damienraymond.cqrs.example.model.product.events.errors.{CantBuyZeroProduct, ProductNotAvailable}
+import play.api.libs.json.Json
 
 
 case class Product(id: UUID,
@@ -26,6 +27,11 @@ case class Product(id: UUID,
     copy(stock = stock.addNewProducts(numberOfProductToAdd))
 
 
+}
+
+
+object Product {
+  implicit val format = Json.format[Product]
 }
 
 

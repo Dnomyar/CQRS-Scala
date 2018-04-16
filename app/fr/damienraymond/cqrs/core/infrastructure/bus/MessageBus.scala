@@ -95,9 +95,9 @@ class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
         .get(message.thisType) match {
         case Some(handler) =>
           logger.debug(s"Calling ${handler.getClass}")
-          Future(handler
+          handler
             .asInstanceOf[CommandHandler[Command[RETURN_T], RETURN_T]]
-            .handle(message))
+            .handle(message)
         case None => Future.failed(new NoHandlerFoundException(message.thisType.toString))
       }
     }

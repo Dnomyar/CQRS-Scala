@@ -34,9 +34,10 @@ class ApplicationStarts @Inject()(commandBus: CommandBus)(implicit ec: Execution
     println("Some products are loaded")
     ()
   }).recover{
-    case e: Exception => logger.error(e.toString)
+    case e: Exception =>
+      logger.error(e.toString)
+      e.printStackTrace()
   }
-
 
 
 
