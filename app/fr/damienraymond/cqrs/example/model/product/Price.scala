@@ -4,7 +4,7 @@ import play.api.libs.json.Json
 
 case class Price(value: Double) extends AnyVal {
 
-  def decreaseBy(percentage: Percentage): Price =
+  private[product] def decreaseBy(percentage: Percentage): Price =
     Price(value * (1 - percentage.rate))
 
 }
