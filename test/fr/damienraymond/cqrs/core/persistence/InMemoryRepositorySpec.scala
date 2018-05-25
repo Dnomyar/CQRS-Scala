@@ -3,9 +3,12 @@ package fr.damienraymond.cqrs.core.persistence
 import java.util.UUID
 
 import fr.damienraymond.cqrs.core.entity.AggregateRoot
+import fr.damienraymond.cqrs.helpers.FutureAwaiter
 import org.scalatest.{FlatSpec, Matchers}
 
-class InMemoryRepositorySpec extends FlatSpec with Matchers {
+import scala.concurrent.{Await, Future}
+
+class InMemoryRepositorySpec extends FlatSpec with Matchers with FutureAwaiter {
 
   "An in memory repository" should "allow to set and get things" in {
     case class Test(id: UUID, name: String) extends AggregateRoot[UUID]
@@ -17,11 +20,11 @@ class InMemoryRepositorySpec extends FlatSpec with Matchers {
 
     val imr = new TestIMR
 
-    imr.save(test1)
-    imr.save(test2)
+    await(imr.save(test1))
+    await(imr.save(test2))
 
-    imr.getAll should have size 2
-    imr.getAll should contain theSameElementsAs List(test1, test2)
+    await(imr.getAll) should have size 2
+    await(imr.getAll) should contain theSameElementsAs List(test1, test2)
 
   }
 
@@ -36,12 +39,16 @@ class InMemoryRepositorySpec extends FlatSpec with Matchers {
 
     val imr = new TestIMR
 
-    imr.save(test1)
-    imr.save(test2)
+    await(imr.save(test1))
+    await(imr.save(test2))
 
-    imr.getAll should have size 1
-    imr.getAll should contain theSameElementsAs List(test2)
+    await(imr.getAll) should have size 1
+    await(imr.getAll) should contain theSameElementsAs List(test2)
 
   }
+
+
+
+
 
 }

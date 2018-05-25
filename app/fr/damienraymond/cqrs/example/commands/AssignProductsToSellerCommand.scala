@@ -5,8 +5,8 @@ import java.util.UUID
 import com.google.inject.Inject
 import fr.damienraymond.cqrs.core.event.Event
 import fr.damienraymond.cqrs.core.{Command, CommandHandler}
-import fr.damienraymond.cqrs.example.infrastructure.persistence.{ProductRepository, SellerRepository}
-import fr.damienraymond.cqrs.example.model.seller.Seller
+import fr.damienraymond.cqrs.example.model.product.ProductRepository
+import fr.damienraymond.cqrs.example.model.seller.{Seller, SellerRepository}
 import fr.damienraymond.cqrs.example.model.seller.events.ProductsAssignedToSeller
 import fr.damienraymond.cqrs.example.model.seller.events.errors.SomeProductsWerentFound
 

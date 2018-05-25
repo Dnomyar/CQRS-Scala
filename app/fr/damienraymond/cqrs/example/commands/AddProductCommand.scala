@@ -4,9 +4,9 @@ import java.util.UUID
 
 import com.google.inject.Inject
 import fr.damienraymond.cqrs.core.event.Event
-import fr.damienraymond.cqrs.core.{Command, CommandHandler, Logger}
-import fr.damienraymond.cqrs.example.infrastructure.persistence.ProductRepository
-import fr.damienraymond.cqrs.example.model.product.{Price, Product, ProductStock}
+import fr.damienraymond.cqrs.core.persistence.UnitOfWork
+import fr.damienraymond.cqrs.core.{Command, CommandHandler, Logger, UnitOfWorkCommandHandler}
+import fr.damienraymond.cqrs.example.model.product.{Price, Product, ProductRepository, ProductStock}
 import fr.damienraymond.cqrs.example.model.product.events.{ProductAdded, ProductStockAdded}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -30,7 +30,7 @@ class AddProductCommandHandler @Inject()(productRepository: ProductRepository)(i
           productId,
           name = cmd.productName,
           price = Price(cmd.price),
-          stock = ProductStock(productId, cmd.numberOfProductToAdd)
+          stock = ProductStock(cmd.numberOfProductToAdd)
         )
         productRepository.save(newProduct).map{ _ =>
           (productId, List(ProductAdded(newProduct)))

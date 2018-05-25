@@ -4,13 +4,13 @@ import java.util.UUID
 
 import com.google.inject.{Inject, Singleton}
 import fr.damienraymond.cqrs.core.persistence.MongoRepository
-import fr.damienraymond.cqrs.example.model.seller.Seller
+import fr.damienraymond.cqrs.example.model.seller.{Seller, SellerRepository}
 import play.modules.reactivemongo.ReactiveMongoApi
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SellerRepository @Inject()(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends MongoRepository[UUID, Seller](reactiveMongoApi) {
+class SellerRepositoryImplementation @Inject()(reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends MongoRepository[UUID, Seller](reactiveMongoApi) with SellerRepository {
   override protected def collectionName: String = "sellers"
 }
 

@@ -4,9 +4,10 @@ import fr.damienraymond.cqrs.core.{Command, CommandHandler}
 import fr.damienraymond.cqrs.core.event.{Event, EventCaptor, SynchronizedEventBus}
 import fr.damienraymond.cqrs.core.infrastructure.event.SynchronizedEventBusImplementation
 import fr.damienraymond.cqrs.core.infrastructure.unitofwork.UnitOfWorkImplementation
-import fr.damienraymond.cqrs.core.module.CoreModule
+import fr.damienraymond.cqrs.core.module.{ClassScannerModule, CoreModule, FakeModule}
 import fr.damienraymond.cqrs.core.persistence.UnitOfWork
 import fr.damienraymond.cqrs.example.module.ExampleModule
+import fr.damienraymond.cqrs.helpers.FutureAwaiter
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
@@ -31,14 +32,12 @@ private[this] object Person {
 }
 
 
-class ServiceCallSpec extends PlaySpec with GuiceOneServerPerSuite {
+class ServiceCallSpec extends PlaySpec with GuiceOneServerPerSuite with FutureAwaiter {
 
   override def fakeApplication(): Application =
     new GuiceApplicationBuilder()
-      .disable[CoreModule]
-      .disable[ExampleModule]
-      .overrides(bind[SynchronizedEventBus].toInstance(null))
-      .overrides(bind[UnitOfWork].to[UnitOfWorkImplementation])
+      .disable[ClassScannerModule]
+      .overrides(new FakeModule)
       .router(Router.from {
           case GET(p"/get_text") => Action { Results.Ok("ok") }
           case GET(p"/get_json") => Action { Results.Ok(Json.obj("name" -> "John", "age" -> 123)) }
@@ -145,9 +144,6 @@ class ServiceCallSpec extends PlaySpec with GuiceOneServerPerSuite {
       await(resp.failed) mustBe ServiceCallException("GET", s"http://localhost:$port/notFoundException", 404, "Not Found")
     }
   }
-
-
-  def await[A](f: Future[A]): A = Await.result(f, 30.seconds)
 
 }
 

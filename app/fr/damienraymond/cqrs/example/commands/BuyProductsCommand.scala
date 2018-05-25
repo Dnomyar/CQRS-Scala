@@ -6,9 +6,8 @@ import javax.inject.Inject
 import fr.damienraymond.cqrs.core.event.Event
 import fr.damienraymond.cqrs.core.persistence.UnitOfWork
 import fr.damienraymond.cqrs.core.{Command, CommandHandler, Logger}
-import fr.damienraymond.cqrs.example.infrastructure.persistence.ProductRepository
 import fr.damienraymond.cqrs.example.model.product.events.ProductBought
-import fr.damienraymond.cqrs.example.model.product.Product
+import fr.damienraymond.cqrs.example.model.product.{Product, ProductRepository}
 import fr.damienraymond.cqrs.example.model.product.events.errors.ProductNotFound
 import fr.damienraymond.cqrs.example.model.store.{Store, StoreNotFound}
 import play.api.libs.json.Json
