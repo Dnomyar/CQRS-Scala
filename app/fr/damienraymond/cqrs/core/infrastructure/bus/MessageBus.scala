@@ -4,7 +4,7 @@ import com.google.inject.Inject
 import fr.damienraymond.cqrs.core
 import fr.damienraymond.cqrs.core._
 import fr.damienraymond.cqrs.core.event.Event
-import fr.damienraymond.cqrs.core.infrastructure.event.SynchronizedEventBusMiddleware
+import fr.damienraymond.cqrs.core.infrastructure.event.EventBusMiddlewareImplementation
 import fr.damienraymond.cqrs.core.middleware.{CommandMiddleware, Middleware, QueryMiddleware}
 import org.apache.commons.lang3.exception.ExceptionContext
 
@@ -62,7 +62,7 @@ trait MessageBus {
 
 
 class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
-                           eventBusMiddleware: SynchronizedEventBusMiddleware)(implicit ec: ExecutionContext) extends Logger {
+                           eventBusMiddleware: EventBusMiddlewareImplementation)(implicit ec: ExecutionContext) extends Logger {
 
   protected val middlewares: List[CommandMiddleware] = List(eventBusMiddleware)
 
@@ -105,7 +105,7 @@ class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
 }
 
 
-class QueryBus @Inject()(handlers: Set[QueryHandler[Query[Any],Any]]) extends Logger {
+class QueryBus @Inject()(handlers: Set[QueryHandler[Query[Any],Any]])(implicit ec: ExecutionContext) extends Logger {
 
   protected val middlewares: List[QueryMiddleware] = List.empty
 

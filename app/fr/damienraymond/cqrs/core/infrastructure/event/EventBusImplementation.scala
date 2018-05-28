@@ -1,12 +1,12 @@
 package fr.damienraymond.cqrs.core.infrastructure.event
 
 import com.google.inject.Inject
-import fr.damienraymond.cqrs.core.event.{Event, EventCaptor, SynchronizedEventBus}
+import fr.damienraymond.cqrs.core.event.{Event, EventCaptor, EventBus}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe._
 
-class SynchronizedEventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(implicit ec: ExecutionContext) extends SynchronizedEventBus {
+class EventBusImplementation @Inject()(captors: Set[EventCaptor[Event[Any]]])(implicit ec: ExecutionContext) extends EventBus {
   override def publish(events: List[Event[_]]): Future[Unit] =
     Future.sequence(events.map(publishOne)).map(_ => ())
 
