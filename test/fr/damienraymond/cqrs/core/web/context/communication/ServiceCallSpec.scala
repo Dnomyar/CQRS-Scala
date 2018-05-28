@@ -1,8 +1,8 @@
 package fr.damienraymond.cqrs.core.web.context.communication
 
 import fr.damienraymond.cqrs.core.{Command, CommandHandler}
-import fr.damienraymond.cqrs.core.event.{Event, EventCaptor, SynchronizedEventBus}
-import fr.damienraymond.cqrs.core.infrastructure.event.SynchronizedEventBusImplementation
+import fr.damienraymond.cqrs.core.event.{Event, EventCaptor, EventBus}
+import fr.damienraymond.cqrs.core.infrastructure.event.EventBusImplementation
 import fr.damienraymond.cqrs.core.infrastructure.unitofwork.UnitOfWorkImplementation
 import fr.damienraymond.cqrs.core.module.{ClassScannerModule, CoreModule, FakeModule}
 import fr.damienraymond.cqrs.core.persistence.UnitOfWork

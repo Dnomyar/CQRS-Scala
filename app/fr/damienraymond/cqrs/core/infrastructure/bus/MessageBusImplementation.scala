@@ -14,57 +14,8 @@ import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 
-/**
-  * TODO : A Query bus can have command
-  */
-trait MessageBus {
-//
-//  protected val middlewares: List[Middleware]
-//
-//  protected val classHandlerMap: Map[Type, Handler[Message[_], _]]
-//
-//  protected lazy val middlewareChain: Chain =
-//    middlewares.foldRight[Chain](HandlerInvocation(classHandlerMap))(MiddlewareChainLink)
-//
-//
-//  def dispatch[RETURN_TYPE](message: Message[RETURN_TYPE])(implicit messageClass: Manifest[Message[RETURN_TYPE]]): Either[String, (RETURN_TYPE, List[Event[_]])] =
-//    middlewareChain.handleMiddlewareAndCallNext(message)
-//
-//
-//
-//  trait Chain {
-//    def handleMiddlewareAndCallNext[RETURN_T](message: Message[RETURN_T]): Either[String, (RETURN_T, List[Event[_]])]
-//  }
-//
-//  case class MiddlewareChainLink(current: Middleware, next: Chain) extends Chain {
-//    override def handleMiddlewareAndCallNext[RETURN_T](message: Message[RETURN_T]): Either[String, (RETURN_T, List[Event[_]])] = {
-//      println(s"Applying middleware : $current")
-//      current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext(message))
-//    }
-//  }
-//
-//  case class HandlerInvocation(handlers: Map[Type, Handler[Message[_], _]]) extends Chain {
-//    override def handleMiddlewareAndCallNext[RETURN_T](message: Message[RETURN_T]): Either[String, (RETURN_T, List[Event[_]])] = {
-//      handlers
-//        .get(typeOf[message]) match {
-//        case Some(handler) =>
-//          Right(
-//            handler
-//              .asInstanceOf[Handler[Message[RETURN_T], RETURN_T]]
-//              .handle(message))
-//        case None => Left("No handler found") // TODO <-
-//      }
-//    }
-//  }
-
-
-}
-
-
-class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
-                           eventBusMiddleware: EventBusMiddlewareImplementation)(implicit ec: ExecutionContext) extends Logger {
-
-  protected val middlewares: List[CommandMiddleware] = List(eventBusMiddleware)
+class CommandBusImplementation @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
+                                         middlewares: List[CommandMiddleware])(implicit ec: ExecutionContext) extends CommandBus with Logger {
 
   protected val classHandlerMap: Map[universe.Type, CommandHandler[Command[_], _]] =
     handlers.map(handler => handler.messageType -> handler).toMap
@@ -73,7 +24,7 @@ class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
     middlewares.foldRight[Chain](HandlerInvocation(classHandlerMap))(MiddlewareChainLink)
 
 
-  def dispatch[RETURN_TYPE](message: Command[RETURN_TYPE]): Future[(RETURN_TYPE, List[Event[_]])] =
+  override def dispatch[RETURN_TYPE](message: Command[RETURN_TYPE]): Future[(RETURN_TYPE, List[Event[_]])] =
     middlewareChain.handleMiddlewareAndCallNext(message)
 
 
@@ -105,9 +56,9 @@ class CommandBus @Inject()(handlers: Set[CommandHandler[Command[Any],Any]],
 }
 
 
-class QueryBus @Inject()(handlers: Set[QueryHandler[Query[Any],Any]])(implicit ec: ExecutionContext) extends Logger {
+class QueryBusImplementation @Inject()(handlers: Set[QueryHandler[Query[Any],Any]],
+                                       middlewares: List[QueryMiddleware])(implicit ec: ExecutionContext) extends QueryBus with Logger {
 
-  protected val middlewares: List[QueryMiddleware] = List.empty
 
   protected val classHandlerMap: Map[universe.Type, QueryHandler[Query[_], _]] =
     handlers.map(handler => handler.messageType -> handler).toMap
@@ -115,10 +66,8 @@ class QueryBus @Inject()(handlers: Set[QueryHandler[Query[Any],Any]])(implicit e
   protected lazy val middlewareChain: Chain =
     middlewares.foldRight[Chain](HandlerInvocation(classHandlerMap))(MiddlewareChainLink)
 
-
-  def dispatch[RETURN_TYPE](message: Query[RETURN_TYPE]): Future[RETURN_TYPE] =
+  override def dispatch[RETURN_TYPE](message: Query[RETURN_TYPE]): Future[RETURN_TYPE] =
     middlewareChain.handleMiddlewareAndCallNext(message)
-
 
 
   trait Chain {
