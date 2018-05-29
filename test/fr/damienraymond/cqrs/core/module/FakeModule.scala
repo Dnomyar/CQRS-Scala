@@ -4,7 +4,7 @@ import java.util.UUID
 
 import fr.damienraymond.cqrs.core.{Command, CommandHandler, Query, QueryHandler}
 import fr.damienraymond.cqrs.core.event.{Event, EventCaptor}
-import fr.damienraymond.cqrs.core.persistence.InMemoryRepository
+import fr.damienraymond.cqrs.core.infrastructure.persistence.InMemoryRepository
 import fr.damienraymond.cqrs.example.model.product.ProductRepository
 import net.codingwell.scalaguice.{ScalaModule, ScalaMultibinder}
 import fr.damienraymond.cqrs.example.model.product.Product

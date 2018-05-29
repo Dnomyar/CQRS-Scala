@@ -35,7 +35,7 @@ class CommandBusImplementation @Inject()(handlers: Set[CommandHandler[Command[An
 
   case class MiddlewareChainLink(current: CommandMiddleware, next: Chain) extends Chain {
     override def handleMiddlewareAndCallNext[RETURN_T](message: Command[RETURN_T]): Future[(RETURN_T, List[Event[_]])] = {
-      println(s"Applying middleware : $current")
+      logger.trace(s"Applying middleware : $current")
       current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext(message))
     }
   }
@@ -76,7 +76,7 @@ class QueryBusImplementation @Inject()(handlers: Set[QueryHandler[Query[Any],Any
 
   case class MiddlewareChainLink(current: QueryMiddleware, next: Chain) extends Chain {
     override def handleMiddlewareAndCallNext[RETURN_T](message: Query[RETURN_T]): Future[RETURN_T] = {
-      println(s"Applying middleware : $current")
+      logger.trace(s"Applying middleware : $current")
       current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext(message))
     }
   }

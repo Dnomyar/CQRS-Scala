@@ -3,6 +3,7 @@ package fr.damienraymond.cqrs.core.persistence
 import java.util.UUID
 
 import fr.damienraymond.cqrs.core.entity.AggregateRoot
+import fr.damienraymond.cqrs.core.infrastructure.persistence.InMemoryRepository
 import fr.damienraymond.cqrs.helpers.FutureAwaiter
 import org.scalatest.{FlatSpec, Matchers}
 

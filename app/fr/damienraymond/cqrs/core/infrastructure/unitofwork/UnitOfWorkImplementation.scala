@@ -1,27 +1,29 @@
 package fr.damienraymond.cqrs.core.infrastructure.unitofwork
 
+import fr.damienraymond.cqrs.core.Logger
 import fr.damienraymond.cqrs.core.persistence.UnitOfWork
 
 import scala.concurrent.Future
 
-class UnitOfWorkImplementation extends UnitOfWork {
+class UnitOfWorkImplementation extends UnitOfWork with Logger {
   override def registerNew[T](obj: T): Unit = {
-    println("[UOW] registerNew")
+    logger.trace("[UOW] registerNew")
   }
 
   override def registerDirty[T](obj: T): Unit = {
-    println("[UOW] registerDirty")
+    logger.trace("[UOW] registerDirty")
   }
 
   override def registerClean[T](obj: T): Unit = {
-    println("[UOW] registerClean")
+    logger.trace("[UOW] registerClean")
   }
 
   override def registerDeleted[T](obj: T): Unit = {
-    println("[UOW] registerDeleted")
+    logger.trace("[UOW] registerDeleted")
   }
 
   override def commit: Future[Unit] = {
-    Future.successful(println("[UOW] commit"))
+    logger.trace("[UOW] commit")
+    Future.successful(())
   }
 }

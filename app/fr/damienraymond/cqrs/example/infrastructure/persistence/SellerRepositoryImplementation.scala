@@ -3,7 +3,7 @@ package fr.damienraymond.cqrs.example.infrastructure.persistence
 import java.util.UUID
 
 import com.google.inject.{Inject, Singleton}
-import fr.damienraymond.cqrs.core.persistence.MongoRepository
+import fr.damienraymond.cqrs.core.infrastructure.persistence.MongoRepository
 import fr.damienraymond.cqrs.example.model.seller.{Seller, SellerRepository}
 import play.modules.reactivemongo.ReactiveMongoApi
 

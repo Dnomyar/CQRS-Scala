@@ -4,13 +4,13 @@ import fr.damienraymond.cqrs.core.event.Event
 import fr.damienraymond.cqrs.core.infrastructure.bus.NoHandlerFoundException
 import fr.damienraymond.cqrs.core.middleware.CommandMiddleware
 import fr.damienraymond.cqrs.core.persistence.UnitOfWorkFactory
-import fr.damienraymond.cqrs.core.{Command, CommandHandler, UnitOfWorkCommandHandler}
+import fr.damienraymond.cqrs.core.{Command, CommandHandler, Logger, UnitOfWorkCommandHandler}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.runtime.universe._
 
 
-class UnitOfWorkCommandBusImplementation private[bus](handlers: Set[CommandHandler[Command[Any],Any]], uowFactory: UnitOfWorkFactory)(val middlewares: List[CommandMiddleware] = List.empty)(implicit ec: ExecutionContext) extends UnitOfWorkCommandBus {
+class UnitOfWorkCommandBusImplementation private[bus](handlers: Set[CommandHandler[Command[Any],Any]], uowFactory: UnitOfWorkFactory)(val middlewares: List[CommandMiddleware] = List.empty)(implicit ec: ExecutionContext) extends UnitOfWorkCommandBus with Logger {
 
 
   protected lazy val middlewareChain: UnitOfWorkChain =
@@ -31,7 +31,7 @@ class UnitOfWorkCommandBusImplementation private[bus](handlers: Set[CommandHandl
 
   case class UnitOfWorkMiddlewareChainLink(current: CommandMiddleware, next: UnitOfWorkChain) extends UnitOfWorkChain {
     override def handleMiddlewareAndCallNext[RETURN_T, COMMAND <: Command[RETURN_T] : TypeTag](message: COMMAND): Future[(RETURN_T, List[Event[_]])] = {
-      println(s"Applying middleware : $current")
+      logger.trace(s"Applying middleware : $current")
       current.apply[RETURN_T](message, () => next.handleMiddlewareAndCallNext[RETURN_T, COMMAND](message))
     }
   }

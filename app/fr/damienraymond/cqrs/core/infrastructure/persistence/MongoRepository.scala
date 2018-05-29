@@ -1,16 +1,16 @@
-package fr.damienraymond.cqrs.core.persistence
+package fr.damienraymond.cqrs.core.infrastructure.persistence
 
 import fr.damienraymond.cqrs.core.Logger
 import fr.damienraymond.cqrs.core.entity.AggregateRoot
+import fr.damienraymond.cqrs.core.persistence.Repository
 import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoApi
 import reactivemongo.api.Cursor
 import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.play.json.collection.JSONCollection
+import reactivemongo.play.json._
+import reactivemongo.play.json.collection.{JSONCollection, _}
 
 import scala.concurrent.{ExecutionContext, Future}
-import reactivemongo.play.json._
-import reactivemongo.play.json.collection._
 
 abstract class MongoRepository[T_ID, T_ROOT <: AggregateRoot[T_ID]](reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext, oformat: OFormat[T_ROOT]) extends Repository[T_ID, T_ROOT] with Logger {
 
@@ -33,6 +33,18 @@ abstract class MongoRepository[T_ID, T_ROOT <: AggregateRoot[T_ID]](reactiveMong
   override def getAll: Future[List[T_ROOT]] =
     collection.flatMap(_.find(Json.obj()).cursor[T_ROOT]().collect[List](Int.MaxValue, Cursor.FailOnError[List[T_ROOT]]()))
 
+//
+//  override def getAllPaginated(page: Int, perPage: Long): Future[List[T_ROOT]] = {
+//    val queryOptions = new QueryOpts(skipN = skipN, batchSizeN = pageSize, flagsN = 0)
+//
+//
+//  }
+//    collection.flatMap(_.find(Json.obj()).cursor[T_ROOT](ReadPreference.primaryPreferred).collect[List](perPage, Cursor.FailOnError[List[T_ROOT]]()))
+//
+//      ().collect[List](Int.MaxValue, Cursor.FailOnError[List[T_ROOT]]()))
+//
+//      .cursor[ConvoDesc](ReadPreference.primaryPreferred).collect[List](pageSize)
+
   override def save(root: T_ROOT): Future[Unit] =
     collection.flatMap(_.update(
       Json.obj("id" -> root.id.toString),
@@ -40,7 +52,7 @@ abstract class MongoRepository[T_ID, T_ROOT <: AggregateRoot[T_ID]](reactiveMong
       upsert = true
     )).map(_ => ())
     .recover{
-      case e: Exception => println(s"ERROR = $e")
+      case e: Exception => logger.error(e.toString)
     }
 
 

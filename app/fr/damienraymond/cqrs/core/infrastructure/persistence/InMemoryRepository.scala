@@ -1,6 +1,7 @@
-package fr.damienraymond.cqrs.core.persistence
+package fr.damienraymond.cqrs.core.infrastructure.persistence
 
 import fr.damienraymond.cqrs.core.entity.AggregateRoot
+import fr.damienraymond.cqrs.core.persistence.Repository
 
 import scala.concurrent.Future
 
