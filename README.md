@@ -27,3 +27,7 @@ However, I think that DDD can also be used I "small" or "medium" projects that d
 ### Step 1 : Event Storming
 ### Step 2 : Build the Aggregates (and test them)
 ### Step 3 : Add Commands, Queries, Event and business rules (and test them)
+
+
+## Credits
+Inspired by the great work available here https://github.com/arpinum/alexandria-api
